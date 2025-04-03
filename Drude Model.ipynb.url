@@ -1,2 +1,40 @@
-[InternetShortcut]
-URL=http://localhost:8888/notebooks/Drude%20Model.ipynb
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants for the Drude model
+omega_p = 1.0      # Plasma frequency (normalized to 1 for simplicity)
+gamma = 0.1        # Damping rate (small compared to omega_p)
+
+# Frequency range: below, around, and above the plasma frequency
+omega = np.linspace(0.01, 2 * omega_p, 500)
+
+# Dielectric function calculations
+epsilon_real = 1 - (omega_p**2 * (omega**2 - gamma**2)) / ((omega**2 + gamma**2)**2 + (gamma * omega)**2)
+epsilon_imag = (omega_p**2 * gamma * omega) / ((omega**2 + gamma**2)**2 + (gamma * omega)**2)
+
+# Find the index of the closest value where epsilon_real crosses zero near omega_p
+zero_cross_index = np.argmin(np.abs(epsilon_real))
+
+# Plotting
+fig, ax = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
+
+# Real part of epsilon with zero-crossing marker
+ax[0].plot(omega, epsilon_real, color='blue', label="Re(ε)")
+ax[0].axvline(x=omega_p, color='red', linestyle='--', label=r"$\omega_p$")
+ax[0].plot(omega[zero_cross_index], epsilon_real[zero_cross_index], 'ro', 
+           label="Zero-Crossing (Re(ε) = 0)")
+ax[0].set_ylabel("Re(ε)")
+ax[0].set_title("Real and Imaginary Parts of Dielectric Function (Drude Model)")
+ax[0].grid(True)
+ax[0].legend()
+
+# Imaginary part of epsilon
+ax[1].plot(omega, epsilon_imag, color='green', label="Im(ε)")
+ax[1].axvline(x=omega_p, color='red', linestyle='--', label=r"$\omega_p$")
+ax[1].set_xlabel("Frequency ω")
+ax[1].set_ylabel("Im(ε)")
+ax[1].grid(True)
+ax[1].legend()
+
+plt.tight_layout()
+plt.show()
